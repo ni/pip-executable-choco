@@ -1,11 +1,11 @@
-# Contributing to \<reponame\> 
+# Contributing to pip-executable-choco 
 
-Contributions to \<reponame\> are welcome from all!
+Contributions to pip-executable-choco are welcome from all!
 
-\<reponame\> is managed via [git](https://git-scm.com), with the canonical upstream
-repository hosted on [GitHub](https://github.com/ni/<reponame>/).
+pip-executable-choco is managed via [git](https://git-scm.com), with the canonical upstream
+repository hosted on [GitHub](https://github.com/ni/pip-executable-choco/).
 
-\<reponame\> follows a pull-request model for development.  If you wish to
+pip-executable-choco follows a pull-request model for development.  If you wish to
 contribute, you will need to create a GitHub account, fork this project, push a
 branch with your changes to your project, and then submit a pull request.
 
@@ -21,11 +21,13 @@ See [GitHub's official documentation](https://help.github.com/articles/using-pul
 
 # Getting Started
 
-- TODO: include build steps here.
+- Clone the repo
+- Install [chocolatey](https://chocolatey.org/install) (need `choco` cli)
 
 # Testing
 
-- TODO: include testing steps here.
+- Run `make.bat` to generate the package
+- Copy the build `.nupkg` to a clean Windows system and use `choco install pipx --source .` to install
 
 # Developer Certificate of Origin (DCO)
 
@@ -58,4 +60,4 @@ See [GitHub's official documentation](https://help.github.com/articles/using-pul
 (taken from [developercertificate.org](https://developercertificate.org/))
 
 See [LICENSE](https://github.com/ni/<reponame>/blob/main/LICENSE)
-for details about how \<reponame\> is licensed.
+for details about how pip-executable-choco is licensed.
