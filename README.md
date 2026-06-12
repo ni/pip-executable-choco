@@ -4,4 +4,4 @@ A project to provide the [PyPI pipx project](https://pypi.org/project/pipx/) thr
 
 ## Contributing
 
-See [CRONTRIBUTING](CONTRIBUTING.md)
+See [CONTRIBUTING](CONTRIBUTING.md)

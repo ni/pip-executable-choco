@@ -59,5 +59,5 @@ See [GitHub's official documentation](https://help.github.com/articles/using-pul
 
 (taken from [developercertificate.org](https://developercertificate.org/))
 
-See [LICENSE](https://github.com/ni/<reponame>/blob/main/LICENSE)
+See [LICENSE](https://github.com/ni/pip-executable-choco/blob/main/LICENSE)
 for details about how pip-executable-choco is licensed.
