@@ -41,18 +41,32 @@ function Get-Python-Home() {
 }
 
 $global:pipx_version = "1.1.0"
-$global:python_exe = Get-Python-Home
+
+function Get-Python-Executable() {
+  return Get-Python-Home
+}
+
+function Get-ChocolateyInstallRoot() {
+  if ($null -ne $env:ChocolateyInstall -and $env:ChocolateyInstall.Trim().Length -gt 0) {
+    return $env:ChocolateyInstall
+  }
+
+  $command = Get-Command -ErrorAction SilentlyContinue "choco"
+  if ($null -ne $command) {
+    return (Split-Path -Parent (Split-Path -Parent $command.Source))
+  }
+
+  $command = Get-Command -ErrorAction SilentlyContinue "chocolatey"
+  if ($null -ne $command) {
+    return (Split-Path -Parent (Split-Path -Parent $command.Source))
+  }
+
+  return $null
+}
 
 function chocolatey-install() {
-  if ($null -eq $ChocolateyInstall) {
-    $ChocolateyInstall = Split-Path -parent (Get-Command choco).Source
-    $ChocolateyInstall = Split-Path -parent $ChocolateyInstall
-  }
-
-  if ($null -eq $ChocolateyInstall) {
-    $ChocolateyInstall = Split-Path -parent (Get-Command chocolatey).Source
-    $ChocolateyInstall = Split-Path -parent $ChocolateyInstall
-  }
+  $ChocolateyInstall = Get-ChocolateyInstallRoot
+  $python_exe = Get-Python-Executable
 
   $installDir = "$ChocolateyInstall\lib\pipx\.venv"
 
@@ -86,4 +100,6 @@ function chocolatey-install() {
   }
 }
 
-chocolatey-install   
+if ($MyInvocation.InvocationName -ne '.') {
+  chocolatey-install
+}

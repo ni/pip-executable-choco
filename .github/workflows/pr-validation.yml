@@ -1,0 +1,29 @@
+name: PR Validation
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  powershell-validation:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Pester
+        shell: pwsh
+        run: |
+          Install-PackageProvider NuGet -MinimumVersion 2.8.5.201 -Force
+          Set-PSRepository PSGallery -InstallationPolicy Trusted
+          $installed = Get-Module -ListAvailable -Name Pester | Sort-Object Version -Descending | Select-Object -First 1
+          if ($null -eq $installed -or $installed.Version -lt [version]'5.5.0') {
+            Install-Module Pester -MinimumVersion 5.5.0 -Scope CurrentUser -Force -SkipPublisherCheck
+          }
+
+      - name: Run installer branch validation
+        shell: pwsh
+        run: |
+          Import-Module Pester -MinimumVersion 5.5.0 -Force
+          Invoke-Pester -Path .\tests -CI -Output Detailed
