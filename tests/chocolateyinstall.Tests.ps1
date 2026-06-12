@@ -1,4 +1,5 @@
 $scriptPath = Join-Path $PSScriptRoot '..\pip_executable_choco\tools\chocolateyinstall.ps1'
+$scriptPath = Resolve-Path $scriptPath -ErrorAction Stop
 . $scriptPath
 
 Describe 'Get-PythonHome' {
