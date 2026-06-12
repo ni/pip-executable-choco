@@ -5,17 +5,25 @@ Write-Host "Warning: Only removing pipx and path entry. Not removing pipx instal
 # region: remove PATH values
 # based on https://gitlab.com/DarwinJS/ChocoPackages/-/blob/master/ec2clitools/tools/chocolateyuninstall.ps1
 $PathToRemove = "$env:USERPROFILE\.local\bin"
+$CurrentPath = [Environment]::GetEnvironmentVariable('PATH', 'User')
 
-foreach ($path in [Environment]::GetEnvironmentVariable('PATH', 'User').Split(';')) {
-  if ($path) {
-    if (($path -ine $PathToRemove) -and ($path -ine "$PathToRemove\")) {
-      [string[]]$Newpath += "$path"
+if ($CurrentPath) {
+  [string[]]$Newpath = @()
+  foreach ($path in $CurrentPath.Split(';')) {
+    if ($path) {
+      if (($path -ine $PathToRemove) -and ($path -ine "$PathToRemove\")) {
+        $Newpath += $path
+      }
     }
   }
+  $AssembledNewPath = ($Newpath -join ';').TrimEnd(';')
+} else {
+  $AssembledNewPath = ''
 }
-$AssembledNewPath = ($Newpath -join ';').TrimEnd(';')
 
-[Environment]::SetEnvironmentVariable('PATH', $AssembledNewPath, 'User')
+if ($AssembledNewPath -or !$CurrentPath) {
+  [Environment]::SetEnvironmentVariable('PATH', $AssembledNewPath, 'User')
+}
 
 # endregion
 

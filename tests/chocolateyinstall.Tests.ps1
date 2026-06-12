@@ -171,3 +171,19 @@ Describe 'Get-ChocolateyInstallRoot' {
     Assert-MockCalled Get-Command -Times 2 -Exactly -Scope It
   }
 }
+
+Describe 'chocolatey-install' {
+  It 'throws when Chocolatey root cannot be determined' {
+    Mock Get-ChocolateyInstallRoot { return $null }
+    Mock Get-Python-Executable { return 'C:\Python311\python.exe' }
+
+    { chocolatey-install } | Should Throw 'Chocolatey installation root'
+  }
+
+  It 'throws when Python executable cannot be determined' {
+    Mock Get-ChocolateyInstallRoot { return 'C:\ProgramData\chocolatey' }
+    Mock Get-Python-Executable { return $null }
+
+    { chocolatey-install } | Should Throw 'Python executable'
+  }
+}

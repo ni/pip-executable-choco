@@ -38,7 +38,7 @@ function Get-PythonHome() {
   }
 
   if ($null -ne $filename) {
-    $result = Get-ChildItem $filename
+    $result = Get-ChildItem $filename -ErrorAction SilentlyContinue
   }
 
   return $result
@@ -72,20 +72,37 @@ function chocolatey-install() {
   $ChocolateyInstall = Get-ChocolateyInstallRoot
   $python_exe = Get-Python-Executable
 
+  if (!$ChocolateyInstall) {
+    throw 'Chocolatey installation root could not be determined.'
+  }
+
+  if (!$python_exe) {
+    throw 'Python executable could not be found in registry or PATH.'
+  }
+
   $installDir = "$ChocolateyInstall\lib\pipx\.venv"
 
   try {
     Write-Host "Creating a venv using $python_exe in $installDir..."
     
     & $python_exe -m venv --copies --system-site-packages $installDir
+    if ($LASTEXITCODE -ne 0) {
+      throw "Failed to create venv (exit code: $LASTEXITCODE)"
+    }
     
     Write-Debug "Upgrading pip in venv"
     
     & $installDir\Scripts\python -m pip install -U pip
+    if ($LASTEXITCODE -ne 0) {
+      throw "Failed to upgrade pip (exit code: $LASTEXITCODE)"
+    }
     
     Write-Host "Installing pipx into venv..."
     
     & $installDir\Scripts\pip install pipx==$pipx_version
+    if ($LASTEXITCODE -ne 0) {
+      throw "Failed to install pipx (exit code: $LASTEXITCODE)"
+    }
 
     # find all exe's except pipx itself
     $files = Get-ChildItem $installDir -Include *.exe -Recurse | Where-Object {
