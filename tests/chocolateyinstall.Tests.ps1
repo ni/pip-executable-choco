@@ -1,7 +1,7 @@
 $scriptPath = Join-Path $PSScriptRoot '..\pip_executable_choco\tools\chocolateyinstall.ps1'
 . $scriptPath
 
-Describe 'Get-Python-Home' {
+Describe 'Get-PythonHome' {
   It 'returns the HKCU app path when present' {
     Mock Get-RegistryValue {
       'C:\Python311\python.exe'
@@ -13,7 +13,7 @@ Describe 'Get-Python-Home' {
       [System.IO.FileInfo]::new('C:\Python311\python.exe')
     } -ParameterFilter { $Path -eq 'C:\Python311\python.exe' }
 
-    $result = Get-Python-Home
+    $result = Get-PythonHome
 
     $result.FullName | Should Be 'C:\Python311\python.exe'
     Assert-MockCalled Get-Command -Times 0 -Exactly -Scope It
@@ -29,7 +29,7 @@ Describe 'Get-Python-Home' {
       [System.IO.FileInfo]::new('C:\Python312\python.exe')
     } -ParameterFilter { $Path -eq 'C:\Python312\python.exe' }
 
-    $result = Get-Python-Home
+    $result = Get-PythonHome
 
     $result.FullName | Should Be 'C:\Python312\python.exe'
     Assert-MockCalled Get-Command -Times 0 -Exactly -Scope It
@@ -46,7 +46,7 @@ Describe 'Get-Python-Home' {
       [System.IO.FileInfo]::new('C:\Python311\python.exe')
     } -ParameterFilter { $Path -eq 'C:\Python311\python.exe' }
 
-    $result = Get-Python-Home
+    $result = Get-PythonHome
 
     $result.FullName | Should Be 'C:\Python311\python.exe'
     Assert-MockCalled Get-Command -Times 1 -Exactly -Scope It -ParameterFilter { $Name -eq 'python.exe' }
@@ -64,7 +64,7 @@ Describe 'Get-Python-Home' {
       [System.IO.FileInfo]::new('C:\Python311\python3.exe')
     } -ParameterFilter { $Path -eq 'C:\Python311\python3.exe' }
 
-    $result = Get-Python-Home
+    $result = Get-PythonHome
 
     $result.FullName | Should Be 'C:\Python311\python3.exe'
     Assert-MockCalled Get-Command -Times 1 -Exactly -Scope It -ParameterFilter { $Name -eq 'python.exe' }
@@ -83,7 +83,7 @@ Describe 'Get-Python-Home' {
       [System.IO.FileInfo]::new('C:\Python311\python.cmd')
     } -ParameterFilter { $Path -eq 'C:\Python311\python.cmd' }
 
-    $result = Get-Python-Home
+    $result = Get-PythonHome
 
     $result.FullName | Should Be 'C:\Python311\python.cmd'
     Assert-MockCalled Get-Command -Times 1 -Exactly -Scope It -ParameterFilter { $Name -eq 'python' }
@@ -100,7 +100,7 @@ Describe 'Get-Python-Home' {
       [System.IO.FileInfo]::new('C:\Python311\python3.cmd')
     } -ParameterFilter { $Path -eq 'C:\Python311\python3.cmd' }
 
-    $result = Get-Python-Home
+    $result = Get-PythonHome
 
     $result.FullName | Should Be 'C:\Python311\python3.cmd'
     Assert-MockCalled Get-Command -Times 1 -Exactly -Scope It -ParameterFilter { $Name -eq 'python3' }
@@ -115,7 +115,7 @@ Describe 'Get-Python-Home' {
     Mock Get-Command { $null } -ParameterFilter { $Name -eq 'python3' }
     Mock Get-ChildItem { throw 'Get-ChildItem should not be called' }
 
-    $result = Get-Python-Home
+    $result = Get-PythonHome
 
     $result | Should Be $null
     Assert-MockCalled Get-Command -Times 4 -Exactly -Scope It

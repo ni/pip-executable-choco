@@ -1,49 +1,53 @@
 ﻿function Get-RegistryValue($key, $value) {
-  $item = (Get-ItemProperty $key $value -ErrorAction SilentlyContinue)
-  if ($item -ne $null) { return $item.$value } else { return $null }
-}  
+  $item = Get-ItemProperty $key $value -ErrorAction SilentlyContinue
 
-function Get-Python-Home() {
+  if ($item -ne $null) {
+    return $item.$value
+  }
+
+  return $null
+}
+
+function Get-PythonHome() {
   $result = $null
-  
-  $filename = Get-RegistryValue "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Python.exe" '(default)' 
-  
-  if ($null -eq $filename) {
-    $filename = Get-RegistryValue "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Python.exe" '(default)'  
+
+  $filename = Get-RegistryValue "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Python.exe" '(default)'
+
+  if (!$filename) {
+    $filename = Get-RegistryValue "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Python.exe" '(default)'
   }
 
-  if ($null -eq $filename) {
-    $command = Get-Command -erroraction 'silentlycontinue' "python.exe"
+  if (!$filename) {
+    $command = Get-Command -ErrorAction SilentlyContinue "python.exe"
     $filename = $command.Source
   }
 
-  if ($null -eq $filename) {
-    $command = Get-Command -erroraction 'silentlycontinue' "python3.exe"
+  if (!$filename) {
+    $command = Get-Command -ErrorAction SilentlyContinue "python3.exe"
     $filename = $command.Source
   }
 
-  if ($null -eq $filename) {
-    $command = Get-Command -erroraction 'silentlycontinue' "python"
+  if (!$filename) {
+    $command = Get-Command -ErrorAction SilentlyContinue "python"
     $filename = $command.Source
   }
 
-  if ($null -eq $filename) {
-    $command = Get-Command -erroraction 'silentlycontinue' "python3"
+  if (!$filename) {
+    $command = Get-Command -ErrorAction SilentlyContinue "python3"
     $filename = $command.Source
   }
-  
+
   if ($null -ne $filename) {
-    $file = Get-ChildItem $filename
-    $result = $file	  
+    $result = Get-ChildItem $filename
   }
-  
+
   return $result
 }
 
 $global:pipx_version = "1.1.0"
 
 function Get-Python-Executable() {
-  return Get-Python-Home
+  return Get-PythonHome
 }
 
 function Get-ChocolateyInstallRoot() {
@@ -83,12 +87,14 @@ function chocolatey-install() {
     
     & $installDir\Scripts\pip install pipx==$pipx_version
 
-    # find all exe's except pipx iteself
-    $files = get-childitem $installDir -include *.exe -recurse | Where-Object {$_.name -notmatch 'pipx'}
+    # find all exe's except pipx itself
+    $files = Get-ChildItem $installDir -Include *.exe -Recurse | Where-Object {
+      $_.Name -notmatch 'pipx'
+    }
 
     foreach ($file in $files) {
       # generate an ignore file for all exe's except pipx
-      New-Item "$file.ignore" -type file -force | Out-Null
+      New-Item "$($file.FullName).ignore" -ItemType File -Force | Out-Null
     }
 
     # Add pipx-shim's path to PATH
